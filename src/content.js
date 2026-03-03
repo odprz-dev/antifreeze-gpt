@@ -1,6 +1,6 @@
 (function() {
     let state = {
-        view: 'MAIN', 
+        view: 'MAIN',
         keepLast: 10,
         isPanic: false,
         totalMsgs: 0,
@@ -17,7 +17,10 @@
     };
 
     chrome.storage.local.get(['keepLast'], (res) => {
-        if (res.keepLast) state.keepLast = res.keepLast;
+        if (res.keepLast) {
+            state.keepLast = res.keepLast;
+        }
+
         init();
     });
 
@@ -30,7 +33,7 @@
 
     const container = document.createElement('div');
     container.id = 'antifreeze-root';
-    container.style.cssText = "position: fixed; top: 20px; right: 20px; z-index: 2147483647; display: block;";
+    container.style.cssText = 'position: fixed; top: 20px; right: 20px; z-index: 2147483647; display: block;';
     const shadow = container.attachShadow({ mode: 'open' });
 
     function getStyles() {
@@ -40,8 +43,8 @@
             * { box-sizing: border-box; }
             @keyframes drift { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(-10px, 20px); } }
             @keyframes pulse-fast { 0%, 100% { opacity: 0.4; transform: scale(1); } 50% { opacity: 0.7; transform: scale(1.05); } }
-            
-            .panel { 
+
+            .panel {
                 width: 300px; height: 450px; border-radius: 24px; position: relative;
                 background: #0F172A; overflow: hidden; color: white;
                 display: flex; flex-direction: column; transition: background 0.5s ease;
@@ -52,16 +55,15 @@
             .blob-2 { bottom: -20px; right: -20px; width: 200px; height: 200px; background: rgba(37, 99, 235, 0.2); animation-delay: 2s; }
             .state-melt .blob-1 { background: rgba(244, 63, 94, 0.4); animation: pulse-fast 1.5s infinite; }
             .content { position: relative; z-index: 10; display: flex; flex-direction: column; height: 100%; padding: 20px; backdrop-filter: blur(16px); }
-            
-            /* Handle para arrastrar */
+
             .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; cursor: move; padding-bottom: 10px; }
-            
+
             .logo-area { display: flex; align-items: center; gap: 8px; pointer-events: none; }
             .logo-text { font-weight: 600; font-size: 18px; }
             .timer { font-family: monospace; font-size: 12px; color: #22D3EE; background: rgba(255,255,255,0.05); padding: 4px 8px; border-radius: 8px; }
             .main-display { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-            .circle { 
-                width: 140px; height: 140px; border-radius: 50%; 
+            .circle {
+                width: 140px; height: 140px; border-radius: 50%;
                 background: rgba(15, 23, 42, 0.4); border: 1px solid rgba(255,255,255,0.2);
                 display: flex; flex-direction: column; align-items: center; justify-content: center;
                 box-shadow: inset 0 0 20px rgba(255,255,255,0.05), 0 0 20px rgba(34,211,238,0.2);
@@ -77,7 +79,7 @@
             .track-bg { position: absolute; width: 100%; height: 6px; border-radius: 10px; background: linear-gradient(90deg, #22D3EE, #F59E0B, #F43F5E); opacity: 0.4; }
             input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; position: relative; z-index: 20; }
             input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 24px; width: 24px; border-radius: 50%; background: white; border: 1px solid rgba(255,255,255,0.8); cursor: pointer; margin-top: -9px; }
-            .btn { 
+            .btn {
                 width: 100%; height: 48px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);
                 background: rgba(255,255,255,0.03); color: white; font-weight: 600; cursor: pointer;
                 display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s;
@@ -98,7 +100,7 @@
         const footerHTML = `
             <div style="margin-top: auto; padding-top: 15px; text-align: center; border-top: 1px solid rgba(255,255,255,0.05);">
                 <span style="font-size: 9px; color: #64748B; letter-spacing: 1px; font-weight: 500;">
-                    by <a href="https://odprz.dev" target="_blank" style="color: #22D3EE; text-decoration: none;">odprz.dev</a> - Ucody
+                    by <a href="https://odprz.dev" target="_blank" rel="noopener noreferrer" style="color: #22D3EE; text-decoration: none;">odprz.dev</a> - Ucody
                 </span>
             </div>
         `;
@@ -107,11 +109,11 @@
             contentHTML = `
                 <div class="header">
                     <div class="logo-area">${ICONS.snow} <span class="logo-text">Antifreeze</span></div>
-                    <button class="settings-btn" id="close-ui" style="font-weight:bold; color:white;">✕</button>
+                    <button class="settings-btn" id="close-ui" style="font-weight:bold; color:white;">X</button>
                 </div>
                 <div class="main-display">
                     <div style="opacity:0.2">${ICONS.snow}</div>
-                    <h2 style="font-size: 16px; margin-top: 15px;">Sin señal térmica</h2>
+                    <h2 style="font-size: 16px; margin-top: 15px;">Sin senal termica</h2>
                     <p style="font-size: 11px; color: #94A3B8; margin-top: 5px;">Entra a un chat para comenzar</p>
                 </div>
                 ${footerHTML}`;
@@ -119,8 +121,8 @@
             contentHTML = `
                 <div class="header">
                     <button class="settings-btn" id="back-btn">${ICONS.back}</button>
-                    <span class="logo-text">Configuración</span>
-                    <button class="settings-btn" id="close-ui" style="font-weight:bold; color:white;">✕</button>
+                    <span class="logo-text">Configuracion</span>
+                    <button class="settings-btn" id="close-ui" style="font-weight:bold; color:white;">X</button>
                 </div>
                 <div style="margin-top:20px">
                     <label style="font-size:11px; color:#22D3EE; font-weight:bold; margin-bottom:8px; display:block;">MENSAJES VISIBLES POR DEFECTO</label>
@@ -140,7 +142,7 @@
                     </div>
                     <span class="timer" id="ui-timer">${timerText}</span>
                     <button class="settings-btn" id="set-btn">${ICONS.settings}</button>
-                    <button class="settings-btn" id="close-ui" style="font-weight:bold; color:white; margin-left:10px;">✕</button>
+                    <button class="settings-btn" id="close-ui" style="font-weight:bold; color:white; margin-left:10px;">X</button>
                 </div>
                 <div class="main-display">
                     <div class="circle">
@@ -148,7 +150,7 @@
                         <span class="count-label">MSGS</span>
                     </div>
                     <p style="font-size: 10px; color: #22D3EE; margin-top: 15px; letter-spacing: 2px; opacity: 0.8;">
-                        ${state.isPanic ? 'LÍMITE TÉRMICO ALCANZADO' : 'MENSAJES VISIBLES'}
+                        ${state.isPanic ? 'LIMITE TERMICO ALCANZADO' : 'MENSAJES VISIBLES'}
                     </p>
                 </div>
                 <div class="slider-container">
@@ -163,7 +165,7 @@
                 </div>
                 <button class="btn ${state.isPanic ? 'btn-cooldown' : 'btn-panic'}" id="ui-panic">
                     <span>${state.isPanic ? ICONS.snow : ICONS.warning}</span>
-                    <span style="margin-left:8px">${state.isPanic ? 'REESTABLECER OPTIMIZACIÓN' : 'VER TODOS LOS MENSAJES'}</span>
+                    <span style="margin-left:8px">${state.isPanic ? 'REESTABLECER OPTIMIZACION' : 'VER TODOS LOS MENSAJES'}</span>
                 </button>
                 ${footerHTML}`;
         }
@@ -195,7 +197,7 @@
         }
     }
 
-    function dragEnd(e) {
+    function dragEnd() {
         initialX = currentX;
         initialY = currentY;
         isDragging = false;
@@ -208,13 +210,13 @@
             currentY = e.clientY - initialY;
             xOffset = currentX;
             yOffset = currentY;
-            container.style.transform = "translate3d(" + currentX + "px, " + currentY + "px, 0)";
+            container.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
         }
     }
 
     function attachEvents() {
         const qs = (id) => shadow.getElementById(id);
-        
+
         if (qs('close-ui')) {
             qs('close-ui').onclick = () => {
                 container.style.display = 'none';
@@ -224,12 +226,13 @@
 
         if (qs('ui-slider')) {
             qs('ui-slider').oninput = (e) => {
-                state.keepLast = parseInt(e.target.value);
+                state.keepLast = parseInt(e.target.value, 10);
                 shadow.querySelector('.count-val').innerText = state.keepLast;
                 runOptimization();
             };
-            qs('ui-slider').onchange = () => chrome.storage.local.set({keepLast: state.keepLast});
+            qs('ui-slider').onchange = () => chrome.storage.local.set({ keepLast: state.keepLast });
         }
+
         if (qs('ui-panic')) {
             qs('ui-panic').onclick = () => {
                 state.isPanic = !state.isPanic;
@@ -237,52 +240,72 @@
                 render();
             };
         }
-        if (qs('set-btn')) qs('set-btn').onclick = () => { state.view = 'SETTINGS'; render(); };
-        if (qs('back-btn')) qs('back-btn').onclick = () => { state.view = 'MAIN'; render(); };
+
+        if (qs('set-btn')) {
+            qs('set-btn').onclick = () => {
+                state.view = 'SETTINGS';
+                render();
+            };
+        }
+
+        if (qs('back-btn')) {
+            qs('back-btn').onclick = () => {
+                state.view = 'MAIN';
+                render();
+            };
+        }
+
         if (qs('save-settings')) {
             qs('save-settings').onclick = () => {
-                state.keepLast = parseInt(qs('def-count').value);
-                chrome.storage.local.set({keepLast: state.keepLast});
+                state.keepLast = parseInt(qs('def-count').value, 10);
+                chrome.storage.local.set({ keepLast: state.keepLast });
                 state.view = 'MAIN';
                 runOptimization();
                 render();
             };
         }
+
         if (qs('help-btn')) {
             qs('help-btn').onclick = () => {
-                const url = chrome.runtime.getURL("public/help.html");
-                window.open(url, "_blank");
+                const url = chrome.runtime.getURL('public/help.html');
+                window.open(url, '_blank');
             };
         }
     }
 
     function formatTime(ms) {
         const s = Math.floor(ms / 1000);
-        return `${Math.floor(s/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`;
+        return `${Math.floor(s / 60).toString().padStart(2, '0')}:${(s % 60).toString().padStart(2, '0')}`;
     }
 
     function runOptimization() {
         const messages = document.querySelectorAll('article');
         state.totalMsgs = messages.length;
+
         messages.forEach((msg, index) => {
-            if (state.isPanic) msg.classList.remove('hidden-by-optimizer');
-            else {
-                if (index < messages.length - state.keepLast) msg.classList.add('hidden-by-optimizer');
-                else msg.classList.remove('hidden-by-optimizer');
+            if (state.isPanic) {
+                msg.classList.remove('hidden-by-optimizer');
+            } else if (index < messages.length - state.keepLast) {
+                msg.classList.add('hidden-by-optimizer');
+            } else {
+                msg.classList.remove('hidden-by-optimizer');
             }
         });
+
         const totalLabel = shadow.getElementById('ui-total');
-        if (totalLabel) totalLabel.innerText = state.totalMsgs;
+        if (totalLabel) {
+            totalLabel.innerText = state.totalMsgs;
+        }
     }
 
-   function init() {
+    function init() {
         function ensureInjected() {
             if (!document.getElementById('antifreeze-root')) {
                 document.body.appendChild(container);
                 render();
-                
-                document.removeEventListener("mousedown", dragStart);
-                document.addEventListener("mousedown", dragStart, false);
+
+                document.removeEventListener('mousedown', dragStart);
+                document.addEventListener('mousedown', dragStart, false);
             }
 
             container.style.display = state.isVisible ? 'block' : 'none';
@@ -290,18 +313,17 @@
 
         ensureInjected();
 
-        document.addEventListener("mouseup", dragEnd, false);
-        document.addEventListener("mousemove", drag, false);
+        document.addEventListener('mouseup', dragEnd, false);
+        document.addEventListener('mousemove', drag, false);
 
-        chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-            if (request.action === "toggle-ui") {
+        chrome.runtime.onMessage.addListener((request) => {
+            if (request.action === 'toggle-ui') {
                 state.isVisible = !state.isVisible;
                 container.style.display = state.isVisible ? 'block' : 'none';
             }
         });
 
         const observer = new MutationObserver(() => {
-            
             ensureInjected();
 
             if (location.href !== state.lastUrl) {
@@ -310,14 +332,17 @@
                 state.isPanic = false;
                 render();
             }
+
             runOptimization();
         });
 
         observer.observe(document.body, { childList: true, subtree: false }); // subtree: false para no saturar
-        
+
         setInterval(() => {
             const timer = shadow.getElementById('ui-timer');
-            if (timer) timer.innerText = formatTime(Date.now() - state.startTime);
+            if (timer) {
+                timer.innerText = formatTime(Date.now() - state.startTime);
+            }
         }, 1000);
     }
 })();
