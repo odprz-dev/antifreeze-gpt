@@ -1,7 +1,11 @@
 (function() {
+    const MIN_KEEP_LAST = 5;
+    const MAX_KEEP_LAST = 100;
+    const DEFAULT_KEEP_LAST = 10;
+
     let state = {
         view: 'MAIN',
-        keepLast: 10,
+        keepLast: DEFAULT_KEEP_LAST,
         isPanic: false,
         totalMsgs: 0,
         startTime: Date.now(),
@@ -17,10 +21,7 @@
     };
 
     chrome.storage.local.get(['keepLast'], (res) => {
-        if (res.keepLast) {
-            state.keepLast = res.keepLast;
-        }
-
+        state.keepLast = normalizeKeepLast(res.keepLast);
         init();
     });
 
@@ -35,6 +36,16 @@
     container.id = 'antifreeze-root';
     container.style.cssText = 'position: fixed; top: 20px; right: 20px; z-index: 2147483647; display: block;';
     const shadow = container.attachShadow({ mode: 'open' });
+
+    function normalizeKeepLast(value) {
+        const parsedValue = Number.parseInt(value, 10);
+
+        if (!Number.isFinite(parsedValue)) {
+            return DEFAULT_KEEP_LAST;
+        }
+
+        return Math.min(MAX_KEEP_LAST, Math.max(MIN_KEEP_LAST, parsedValue));
+    }
 
     function getStyles() {
         return `
@@ -126,7 +137,7 @@
                 </div>
                 <div style="margin-top:20px">
                     <label style="font-size:11px; color:#22D3EE; font-weight:bold; margin-bottom:8px; display:block;">MENSAJES VISIBLES POR DEFECTO</label>
-                    <input type="number" id="def-count" value="${state.keepLast}">
+                    <input type="number" id="def-count" min="${MIN_KEEP_LAST}" max="${MAX_KEEP_LAST}" step="1" value="${state.keepLast}">
                     <button class="btn btn-cooldown" id="save-settings" style="margin-top: 15px;">GUARDAR</button>
                     <button class="btn" id="help-btn" style="margin-top: 20px; border-color: rgba(34, 211, 238, 0.3); color: #22D3EE;">
                         <span> AYUDA </span>
@@ -157,7 +168,7 @@
                     <div class="slider-labels"><span>FROZEN</span><span>MELTDOWN</span></div>
                     <div class="track-wrapper">
                         <div class="track-bg"></div>
-                        <input type="range" id="ui-slider" min="5" max="100" value="${state.keepLast}" ${state.isPanic ? 'disabled' : ''}>
+                        <input type="range" id="ui-slider" min="${MIN_KEEP_LAST}" max="${MAX_KEEP_LAST}" value="${state.keepLast}" ${state.isPanic ? 'disabled' : ''}>
                     </div>
                     <div style="text-align: center; font-size: 10px; color: #94A3B8; margin-top: 12px;">
                         Total historial: <b id="ui-total">${state.totalMsgs}</b>
@@ -189,12 +200,18 @@
     let yOffset = 0;
 
     function dragStart(e) {
-        const header = shadow.querySelector('.header');
-        if (e.target === header || header.contains(e.target)) {
-            initialX = e.clientX - xOffset;
-            initialY = e.clientY - yOffset;
-            isDragging = true;
+        const target = e.target;
+        if (!(target instanceof HTMLElement)) {
+            return;
         }
+
+        if (target.closest('button, input, a, label')) {
+            return;
+        }
+
+        initialX = e.clientX - xOffset;
+        initialY = e.clientY - yOffset;
+        isDragging = true;
     }
 
     function dragEnd() {
@@ -216,6 +233,11 @@
 
     function attachEvents() {
         const qs = (id) => shadow.getElementById(id);
+        const header = shadow.querySelector('.header');
+
+        if (header) {
+            header.onmousedown = dragStart;
+        }
 
         if (qs('close-ui')) {
             qs('close-ui').onclick = () => {
@@ -226,7 +248,7 @@
 
         if (qs('ui-slider')) {
             qs('ui-slider').oninput = (e) => {
-                state.keepLast = parseInt(e.target.value, 10);
+                state.keepLast = normalizeKeepLast(e.target.value);
                 shadow.querySelector('.count-val').innerText = state.keepLast;
                 runOptimization();
             };
@@ -257,7 +279,7 @@
 
         if (qs('save-settings')) {
             qs('save-settings').onclick = () => {
-                state.keepLast = parseInt(qs('def-count').value, 10);
+                state.keepLast = normalizeKeepLast(qs('def-count').value);
                 chrome.storage.local.set({ keepLast: state.keepLast });
                 state.view = 'MAIN';
                 runOptimization();
@@ -303,9 +325,6 @@
             if (!document.getElementById('antifreeze-root')) {
                 document.body.appendChild(container);
                 render();
-
-                document.removeEventListener('mousedown', dragStart);
-                document.addEventListener('mousedown', dragStart, false);
             }
 
             container.style.display = state.isVisible ? 'block' : 'none';
