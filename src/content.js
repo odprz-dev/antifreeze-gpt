@@ -2,6 +2,7 @@
     const MIN_KEEP_LAST = 5;
     const MAX_KEEP_LAST = 100;
     const DEFAULT_KEEP_LAST = 10;
+    const OPTIMIZATION_DEBOUNCE_MS = 80;
 
     let state = {
         view: 'MAIN',
@@ -12,6 +13,10 @@
         lastUrl: location.href,
         isVisible: true
     };
+
+    let optimizerObserver;
+    let observedRoot;
+    let optimizationTimerId;
 
     const ICONS = {
         snow: `<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M11 21v-4.175l-3.2 1.85-1-1.725 3.2-1.85-3.2-1.85 1-1.725 3.2 1.85V9l-3.2-1.85 1-1.725 3.2 1.85V3h2v4.275l3.2-1.85 1 1.725L13.2 9v4.1l3.2-1.85 1 1.725-3.2 1.85 3.2 1.85-1 1.725-3.2-1.85V21h-2z"/></svg>`,
@@ -45,6 +50,37 @@
         }
 
         return Math.min(MAX_KEEP_LAST, Math.max(MIN_KEEP_LAST, parsedValue));
+    }
+
+    function isChatConversation() {
+        return location.pathname.startsWith('/c/');
+    }
+
+    function getConversationRoot() {
+        return document.querySelector('main');
+    }
+
+    function getMessages() {
+        const conversationRoot = getConversationRoot();
+
+        if (!isChatConversation() || !conversationRoot) {
+            return [];
+        }
+
+        return Array.from(conversationRoot.querySelectorAll('article'));
+    }
+
+    function clearOptimization() {
+        document.querySelectorAll('.hidden-by-optimizer').forEach((message) => {
+            message.classList.remove('hidden-by-optimizer');
+        });
+    }
+
+    function updateTotalLabel() {
+        const totalLabel = shadow.getElementById('ui-total');
+        if (totalLabel) {
+            totalLabel.innerText = state.totalMsgs;
+        }
     }
 
     function getStyles() {
@@ -104,7 +140,7 @@
     }
 
     function render() {
-        const isChat = location.href.includes('/c/');
+        const isChat = isChatConversation();
         const timerText = formatTime(Date.now() - state.startTime);
         let contentHTML = '';
 
@@ -189,13 +225,14 @@
                 <div class="content">${contentHTML}</div>
             </div>`;
         attachEvents();
+        updateTotalLabel();
     }
 
     let isDragging = false;
-    let currentX;
-    let currentY;
-    let initialX;
-    let initialY;
+    let currentX = 0;
+    let currentY = 0;
+    let initialX = 0;
+    let initialY = 0;
     let xOffset = 0;
     let yOffset = 0;
 
@@ -300,24 +337,58 @@
         return `${Math.floor(s / 60).toString().padStart(2, '0')}:${(s % 60).toString().padStart(2, '0')}`;
     }
 
+    function scheduleOptimization() {
+        if (optimizationTimerId) {
+            window.clearTimeout(optimizationTimerId);
+        }
+
+        optimizationTimerId = window.setTimeout(() => {
+            optimizationTimerId = null;
+            runOptimization();
+        }, OPTIMIZATION_DEBOUNCE_MS);
+    }
+
     function runOptimization() {
-        const messages = document.querySelectorAll('article');
+        const messages = getMessages();
         state.totalMsgs = messages.length;
 
-        messages.forEach((msg, index) => {
-            if (state.isPanic) {
-                msg.classList.remove('hidden-by-optimizer');
-            } else if (index < messages.length - state.keepLast) {
-                msg.classList.add('hidden-by-optimizer');
-            } else {
-                msg.classList.remove('hidden-by-optimizer');
-            }
+        if (!isChatConversation() || messages.length === 0) {
+            clearOptimization();
+            updateTotalLabel();
+            return;
+        }
+
+        messages.forEach((message, index) => {
+            const shouldHide = !state.isPanic && index < messages.length - state.keepLast;
+            message.classList.toggle('hidden-by-optimizer', shouldHide);
         });
 
-        const totalLabel = shadow.getElementById('ui-total');
-        if (totalLabel) {
-            totalLabel.innerText = state.totalMsgs;
+        updateTotalLabel();
+    }
+
+    function syncUrlState() {
+        if (location.href === state.lastUrl) {
+            return;
         }
+
+        state.lastUrl = location.href;
+        state.startTime = Date.now();
+        state.isPanic = false;
+        state.totalMsgs = 0;
+        render();
+        observeDomChanges();
+    }
+
+    function observeDomChanges() {
+        const nextRoot = getConversationRoot() || document.body;
+
+        if (!optimizerObserver || observedRoot === nextRoot) {
+            return;
+        }
+
+        optimizerObserver.disconnect();
+        observedRoot = nextRoot;
+        optimizerObserver.observe(nextRoot, { childList: true, subtree: true });
     }
 
     function init() {
@@ -342,22 +413,20 @@
             }
         });
 
-        const observer = new MutationObserver(() => {
+        optimizerObserver = new MutationObserver(() => {
             ensureInjected();
-
-            if (location.href !== state.lastUrl) {
-                state.lastUrl = location.href;
-                state.startTime = Date.now();
-                state.isPanic = false;
-                render();
-            }
-
-            runOptimization();
+            syncUrlState();
+            observeDomChanges();
+            scheduleOptimization();
         });
 
-        observer.observe(document.body, { childList: true, subtree: false }); // subtree: false para no saturar
+        observedRoot = null;
+        observeDomChanges();
+        scheduleOptimization();
 
         setInterval(() => {
+            syncUrlState();
+
             const timer = shadow.getElementById('ui-timer');
             if (timer) {
                 timer.innerText = formatTime(Date.now() - state.startTime);
