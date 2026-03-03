@@ -24,6 +24,14 @@ A medida que una conversacion en ChatGPT escala, el motor de React debe gestiona
 3. Activa el **"Modo de desarrollador"** (Developer mode).
 4. Haz clic en **"Cargar extension sin empaquetar"** (Load unpacked) y selecciona la carpeta del proyecto.
 
+## Testing
+El proyecto incluye una suite de smoke tests sin dependencias externas en `tests/content-runtime.test.html`.
+
+Para ejecutarla:
+1. Abre `tests/content-runtime.test.html` en un navegador.
+2. Revisa el resultado en pantalla.
+3. Si alguna prueba falla, tambien veras el detalle en la consola del navegador.
+
 ## Licencia
 Este proyecto esta bajo la licencia **GPL-3.0**. Eres libre de usarlo, modificarlo y distribuirlo, siempre y cuando cualquier derivado permanezca bajo la misma licencia de codigo abierto.
 

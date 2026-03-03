@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Antifreeze Content Smoke Tests</title>
+    <style>
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            margin: 0;
+            padding: 24px;
+        }
+
+        h1 {
+            margin-top: 0;
+            font-size: 24px;
+        }
+
+        #results {
+            margin-top: 16px;
+            padding: 16px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            white-space: pre-wrap;
+        }
+
+        .pass {
+            color: #22c55e;
+        }
+
+        .fail {
+            color: #f43f5e;
+        }
+
+        main {
+            margin-top: 24px;
+            padding: 12px;
+            border: 1px dashed rgba(255, 255, 255, 0.15);
+        }
+    </style>
+</head>
+<body>
+    <h1>Antifreeze Content Smoke Tests</h1>
+    <p>Esta pagina valida la logica critica del content script sin dependencias externas.</p>
+    <div id="results">Running tests...</div>
+    <main id="conversation-root"></main>
+
+    <script src="../src/content/state.js"></script>
+    <script src="../src/content/selectors.js"></script>
+    <script>
+        (function() {
+            const app = window.AntifreezeContent;
+            app.shadow = document;
+            app.updateTotalLabel = () => {};
+        })();
+    </script>
+    <script src="../src/content/optimizer.js"></script>
+    <script src="./content-runtime.test.js"></script>
+</body>
+</html>
