@@ -52,18 +52,23 @@
         return Math.min(MAX_KEEP_LAST, Math.max(MIN_KEEP_LAST, parsedValue));
     }
 
-    function isChatConversation() {
-        return location.pathname.startsWith('/c/');
-    }
-
     function getConversationRoot() {
         return document.querySelector('main');
+    }
+
+    function hasConversationMessages() {
+        const conversationRoot = getConversationRoot();
+        return Boolean(conversationRoot?.querySelector('article'));
+    }
+
+    function isChatConversation() {
+        return location.pathname.includes('/c/') || hasConversationMessages();
     }
 
     function getMessages() {
         const conversationRoot = getConversationRoot();
 
-        if (!isChatConversation() || !conversationRoot) {
+        if (!conversationRoot) {
             return [];
         }
 
