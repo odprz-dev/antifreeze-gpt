@@ -5,8 +5,7 @@
   "description": "Optimiza el rendimiento de ChatGPT ocultando mensajes antiguos y reduciendo la carga del navegador en chats extensos.",
   "author": "odprz.dev - Ucody",
   "permissions": [
-    "storage",
-    "activeTab"
+    "storage"
   ],
   "background": {
     "service_worker": "src/background.js"
@@ -31,7 +30,12 @@
         "https://chatgpt.com/*"
       ],
       "js": [
-        "src/content.js"
+        "src/content/state.js",
+        "src/content/selectors.js",
+        "src/content/storage.js",
+        "src/content/ui.js",
+        "src/content/optimizer.js",
+        "src/content/index.js"
       ],
       "run_at": "document_idle"
     }

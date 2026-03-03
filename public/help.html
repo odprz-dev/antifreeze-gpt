@@ -3,55 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guía de Optimización - Antifreeze GPT</title>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+    <title>Guia de Optimizacion - Antifreeze GPT</title>
     <style>
-        body { font-family: 'Space Grotesk', sans-serif; background: #0F172A; color: #F8FAFC; line-height: 1.6; padding: 40px; max-width: 800px; margin: auto; }
+        body { font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; background: #0F172A; color: #F8FAFC; line-height: 1.6; padding: 40px; max-width: 800px; margin: auto; }
         .accent { color: #22D3EE; font-weight: bold; }
         h1 { font-size: 2.5rem; color: #22D3EE; border-bottom: 2px solid #1E293B; padding-bottom: 10px; }
         h2 { color: #E2E8F0; margin-top: 40px; }
         .card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); padding: 25px; border-radius: 16px; margin: 20px 0; }
-        code { background: #1E293B; color: #22D3EE; padding: 15px; display: block; border-radius: 8px; font-family: monospace; position: relative; }
+        code { background: #1E293B; color: #22D3EE; padding: 15px; display: block; border-radius: 8px; font-family: monospace; position: relative; white-space: pre-wrap; }
         .warning { border-left: 4px solid #F43F5E; background: rgba(244, 63, 94, 0.05); padding: 15px; }
     </style>
 </head>
 <body>
-    <h1>Optimización de Sesiones de Alta Carga</h1>
-    
-    <p>Si estás aquí es porque tu flujo de trabajo con la IA ha alcanzado un nivel de complejidad avanzado. Es normal que, a medida que un chat crece, el navegador comience a experimentar degradación de rendimiento.</p>
+    <h1>Optimizacion de Sesiones de Alta Carga</h1>
 
-    <h2>¿Por qué se ralentiza mi chat?</h2>
+    <p>Si estas aqui es porque tu flujo de trabajo con la IA ha alcanzado un nivel de complejidad avanzado. Es normal que, a medida que un chat crece, el navegador comience a experimentar degradacion de rendimiento.</p>
+
+    <h2>Por que se ralentiza mi chat?</h2>
     <div class="card">
-        ChatGPT utiliza una arquitectura de <strong>Single Page Application (SPA)</strong>. Cuando un historial es muy extenso, el navegador debe procesar miles de nodos HTML (DOM), renderizar bloques de código complejos y mantener en memoria toda la "hidratación" de la conversación. Llegado a un punto, la CPU del equipo se satura intentando recalcular la interfaz, lo que produce el molesto <em>lag</em>.
+        ChatGPT utiliza una arquitectura de <strong>Single Page Application (SPA)</strong>. Cuando un historial es muy extenso, el navegador debe procesar miles de nodos HTML (DOM), renderizar bloques de codigo complejos y mantener en memoria toda la "hidratacion" de la conversacion. Llegado a un punto, la CPU del equipo se satura intentando recalcular la interfaz, lo que produce el molesto <em>lag</em>.
     </div>
 
     <h2>Uso de Antifreeze GPT</h2>
-    <p>Nuestra extensión actúa como un "escudo térmico", ocultando los elementos que no estás viendo para que el procesador no pierda ciclos de reloj en dibujarlos. Sin embargo, recuerda:</p>
+    <p>Nuestra extension actua como un "escudo termico", ocultando los elementos que no estas viendo para que el procesador no pierda ciclos de reloj en dibujarlos. Sin embargo, recuerda:</p>
     <div class="card warning">
-        <strong>Nota sobre Congelamientos:</strong> Es normal que, al cargar un chat masivo, el navegador te avise que "La página no responde". No entres en pánico. <strong>Observa el Timer de Antifreeze:</strong> si los segundos saltan o se detienen, el hilo principal de JS está ocupado. Dale unos segundos; en cuanto el timer avance de forma fluida (segundo a segundo), la interfaz será funcional de nuevo.
+        <strong>Nota sobre Congelamientos:</strong> Es normal que, al cargar un chat masivo, el navegador te avise que "La pagina no responde". No entres en panico. <strong>Observa el Timer de Antifreeze:</strong> si los segundos saltan o se detienen, el hilo principal de JS esta ocupado. Dale unos segundos; en cuanto el timer avance de forma fluida (segundo a segundo), la interfaz sera funcional de nuevo.
     </div>
 
     <div class="card warning">
-        <h2>¿Qué hacer si el navegador se bloquea?</h2>
-        <p>A pesar de la extensión, es normal que al cargar miles de mensajes sientas un freeze momentáneo o el navegador te avise que "la página está ocupada". Esto sucede mientras el motor de JavaScript de OpenAI termina de indexar los datos. <strong>Solo da un poco de tiempo</strong> y reanuda tu interacción cuando el timer de Antifreeze avance de manera normal.</p>
+        <h2>Que hacer si el navegador se bloquea?</h2>
+        <p>A pesar de la extension, es normal que al cargar miles de mensajes sientas un freeze momentaneo o el navegador te avise que "la pagina esta ocupada". Esto sucede mientras el motor de JavaScript de OpenAI termina de indexar los datos. <strong>Solo da un poco de tiempo</strong> y reanuda tu interaccion cuando el timer de Antifreeze avance de manera normal.</p>
     </div>
 
-    <h2>Estrategia recomendada: Migración de Contexto</h2>
-    <p>Cuando un chat es crítico pero el rendimiento es insostenible, lo profesional es realizar una <strong>Migración Limpia</strong>. Copia y pega el siguiente prompt en tu chat actual para llevarte toda la inteligencia a una sesión nueva:</p>
-    
-    <code>
-        "Necesito migrar este chat a una sesión nueva por limitaciones de rendimiento. 
-        Genera un resumen ejecutivo que incluya: 
-        1. El 'Core' del proyecto o problema discutido. 
-        2. El Perfil y Rol que has adoptado hasta ahora. 
-        3. Decisiones clave tomadas y lógica técnica aplicada. 
-        4. Pendientes o próximos pasos inmediatos. 
-        Dame este resumen en un formato compacto
-    </code>
+    <h2>Estrategia recomendada: Migracion de Contexto</h2>
+    <p>Cuando un chat es critico pero el rendimiento es insostenible, lo profesional es realizar una <strong>Migracion Limpia</strong>. Copia y pega el siguiente prompt en tu chat actual para llevarte toda la inteligencia a una sesion nueva:</p>
+
+    <code>"Necesito migrar este chat a una sesion nueva por limitaciones de rendimiento.
+Genera un resumen ejecutivo que incluya:
+1. El 'Core' del proyecto o problema discutido.
+2. El Perfil y Rol que has adoptado hasta ahora.
+3. Decisiones clave tomadas y logica tecnica aplicada.
+4. Pendientes o proximos pasos inmediatos.
+Dame este resumen en un formato compacto"</code>
 
     <footer style="margin-top: 80px; padding-top: 20px; border-top: 1px solid #1E293B; text-align: center;">
         <p style="opacity: 0.5; font-size: 0.9rem;">
-            © 2026 Antifreeze GPT - Productividad bajo cero.<br>
+            (c) 2026 Antifreeze GPT - Productividad bajo cero.<br>
             <span class="accent">by odprz.dev - Ucody</span>
         </p>
     </footer>
