@@ -30,7 +30,12 @@
         "https://chatgpt.com/*"
       ],
       "js": [
-        "src/content.js"
+        "src/content/state.js",
+        "src/content/selectors.js",
+        "src/content/storage.js",
+        "src/content/ui.js",
+        "src/content/optimizer.js",
+        "src/content/index.js"
       ],
       "run_at": "document_idle"
     }
